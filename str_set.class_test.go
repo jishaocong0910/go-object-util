@@ -11,14 +11,14 @@ func TestStrSet(t *testing.T) {
 	set := NewStrSet(false, "abC")
 	set.Add("abc")
 	set.Add("Abc")
-	r.Equal(1, set.Len())
+	r.Equal(int64(1), set.Len())
 	r.True(set.Contains("aBc"))
 
 	set2 := NewStrSet(false)
 	set2.Add("abC")
 	set2.Add("bcd")
 	set.AddSet(set2)
-	r.Equal(2, set.Len())
+	r.Equal(int64(2), set.Len())
 
 	slice := set2.Raw()
 	r.Contains(slice, "abC")

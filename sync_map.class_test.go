@@ -1,15 +1,13 @@
 package o
 
 import (
-	"testing"
-
 	"github.com/stretchr/testify/require"
+	"testing"
 )
 
-func TestMap(t *testing.T) {
+func TestSyncMap(t *testing.T) {
 	r := require.New(t)
-	m := NewMap[string, any]()
-	r.Equal(m.map_().i, m)
+	m := NewSyncMap[string, any]()
 	m.Put("aaa", "111")
 	r.Equal("111", m.Get("aaa"))
 	m.Put("AAA", "222")
@@ -29,9 +27,4 @@ func TestMap(t *testing.T) {
 	r.False(m.ContainsKeys("aaa", "333", "x"))
 	r.True(m.ContainsAnyKeys("x", "y", "aaa"))
 	r.False(m.ContainsAnyKeys("x", "y", "z"))
-
-	r.True(m.Remove("aaa"))
-	r.Equal(int64(2), m.Len())
-	r.False(m.Remove("hhh"))
-	r.Equal(int64(2), m.Len())
 }

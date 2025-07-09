@@ -2,6 +2,17 @@ package o
 
 type SetI[T comparable] interface {
 	set_() *setM[T]
+
+	Add(es ...T)
+	AddSet(other SetI[T])
+	Remove(e T) bool
+	RemoveAll(e ...T)
+	Contains(es ...T) bool
+	ContainsAny(es ...T) bool
+	Len() int64
+	Empty() bool
+	Raw() []T
+	Range(f func(e T))
 }
 
 type setM[T comparable] struct {
@@ -15,46 +26,46 @@ func (this *setM[T]) set_() *setM[T] {
 
 func (this *setM[T]) Add(es ...T) {
 	for _, e := range es {
-		this.im.map_().Put(e, struct{}{})
+		this.im.Put(e, struct{}{})
 	}
 }
 
-func (this *setM[T]) AddSet(i SetI[T]) {
-	for k := range i.set_().im.map_().m {
-		this.im.map_().Put(k, struct{}{})
-	}
+func (this *setM[T]) AddSet(other SetI[T]) {
+	other.Range(func(e T) {
+		this.Add(e)
+	})
 }
 
 func (this *setM[T]) Remove(e T) bool {
-	return this.im.map_().Remove(e)
+	return this.im.Remove(e)
 }
 
 func (this *setM[T]) RemoveAll(e ...T) {
-	this.im.map_().RemoveAll(e...)
+	this.im.RemoveAll(e...)
 }
 
 func (this *setM[T]) Contains(ts ...T) bool {
-	return this.im.map_().ContainsKeys(ts...)
+	return this.im.ContainsKeys(ts...)
 }
 
-func (this *setM[T]) ContainsAny(ts ...T) bool {
-	return this.im.map_().ContainsAnyKey(ts...)
+func (this *setM[T]) ContainsAny(es ...T) bool {
+	return this.im.ContainsAnyKeys(es...)
 }
 
-func (this *setM[T]) Len() int {
-	return this.im.map_().Len()
+func (this *setM[T]) Len() int64 {
+	return this.im.Len()
 }
 
 func (this *setM[T]) Empty() bool {
-	return this.im.map_().Empty()
+	return this.im.Empty()
 }
 
 func (this *setM[T]) Raw() []T {
-	return this.im.map_().Keys()
+	return this.im.Keys()
 }
 
-func (this *setM[T]) Range(f func(t T)) {
-	this.im.map_().Range(func(k T, v any) {
+func (this *setM[T]) Range(f func(e T)) {
+	this.im.Range(func(k T, v any) {
 		f(k)
 	})
 }

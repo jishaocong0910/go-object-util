@@ -1,15 +1,13 @@
 package o
 
 import (
-	"testing"
-
 	"github.com/stretchr/testify/require"
+	"testing"
 )
 
-func TestSet(t *testing.T) {
+func TestSyncSet(t *testing.T) {
 	r := require.New(t)
-	s := NewSet[string]()
-	r.Equal(s.set_().i, s)
+	s := NewSyncSet[string]()
 	r.True(s.Empty())
 	r.Equal(int64(0), s.Len())
 	s2 := NewSet[string]("a", "b", "c")
@@ -30,11 +28,4 @@ func TestSet(t *testing.T) {
 
 	s.Remove("a")
 	r.False(s.Contains("a"))
-}
-
-func validateElement[T comparable](r *require.Assertions, s SetI[T], contains ...T) {
-	r.Equal(int64(len(contains)), s.Len(), "expected: %v, actual: %v", contains, s.Raw())
-	for _, c := range contains {
-		r.True(s.Contains(c), "not contains: %v, actual: %v", c, s.Raw())
-	}
 }

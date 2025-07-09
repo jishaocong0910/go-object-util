@@ -36,6 +36,7 @@ func TestEnum(t *testing.T) {
 	r.True(enum.OfIdIgnoreCase("SNAKE").Undefined())
 	r.True(enum.OfId("BIRD").Undefined())
 	r.False(enum.OfIdIgnoreCase("BIRD").Undefined())
+	r.True(enum.Undefined().Undefined())
 
 	values := enum.Elems()
 	r.Len(values, 3)
