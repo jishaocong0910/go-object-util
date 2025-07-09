@@ -8,7 +8,8 @@ import (
 
 func TestMap(t *testing.T) {
 	r := require.New(t)
-	m := NewMap[string, any]()
+	var m MapI[string, any]
+	m = NewMap[string, any]()
 	m.Put("aaa", "111")
 	r.Equal("111", m.Get("aaa"))
 	m.Put("AAA", "222")
@@ -26,6 +27,6 @@ func TestMap(t *testing.T) {
 	r.Equal(3, m.Len())
 	r.True(m.ContainsKeys("aaa", "333"))
 	r.False(m.ContainsKeys("aaa", "333", "x"))
-	r.True(m.ContainsAnyKey("x", "y", "aaa"))
-	r.False(m.ContainsAnyKey("x", "y", "z"))
+	r.True(m.ContainsAnyKeys("x", "y", "aaa"))
+	r.False(m.ContainsAnyKeys("x", "y", "z"))
 }

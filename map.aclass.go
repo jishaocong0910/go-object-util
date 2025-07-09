@@ -1,12 +1,28 @@
 package o
 
-type mapI[K comparable, V any] interface {
+type MapI[K comparable, V any] interface {
 	map_() *mapM[K, V]
 	key(K) K
+
+	Put(k K, v V)
+	PutAll(other MapI[K, V])
+	GetEntry(k K) *Entry[K, V]
+	Get(k K) (v V)
+	GetIfAbsent(k K, f func(k K) V) (v V)
+	Remove(k K) bool
+	RemoveAll(ks ...K)
+	ContainsKeys(ks ...K) bool
+	ContainsAnyKeys(ks ...K) bool
+	Keys() []K
+	Values() []V
+	Len() int64
+	Empty() bool
+	Raw() map[K]V
+	Range(f func(k K, v V))
 }
 
 type mapM[K comparable, V any] struct {
-	i mapI[K, V]
+	i MapI[K, V]
 	m map[K]*Entry[K, V]
 }
 
@@ -22,7 +38,7 @@ func (this *mapM[K, V]) Put(k K, v V) {
 	this.m[this.i.key(k)] = &Entry[K, V]{k, v}
 }
 
-func (this *mapM[K, V]) PutAll(other mapI[K, V]) {
+func (this *mapM[K, V]) PutAll(other MapI[K, V]) {
 	for k, v := range other.map_().m {
 		this.m[this.i.key(k)] = v
 	}
@@ -74,7 +90,7 @@ func (this *mapM[K, V]) ContainsKeys(ks ...K) bool {
 	return true
 }
 
-func (this *mapM[K, V]) ContainsAnyKey(ks ...K) bool {
+func (this *mapM[K, V]) ContainsAnyKeys(ks ...K) bool {
 	for _, k := range ks {
 		if _, ok := this.m[this.i.key(k)]; ok {
 			return true
@@ -99,8 +115,8 @@ func (this *mapM[K, V]) Values() []V {
 	return values
 }
 
-func (this *mapM[K, V]) Len() int {
-	return len(this.m)
+func (this *mapM[K, V]) Len() int64 {
+	return int64(len(this.m))
 }
 
 func (this *mapM[K, V]) Empty() bool {
@@ -121,7 +137,7 @@ func (this *mapM[K, V]) Range(f func(k K, v V)) {
 	}
 }
 
-func extendMap[K comparable, V any](i mapI[K, V]) *mapM[K, V] {
+func extendMap[K comparable, V any](i MapI[K, V]) *mapM[K, V] {
 	return &mapM[K, V]{i: i, m: map[K]*Entry[K, V]{}}
 }
 

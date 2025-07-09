@@ -5,13 +5,29 @@ import (
 	"sync/atomic"
 )
 
-type syncMapI[K comparable, V any] interface {
+type SyncMapI[K comparable, V any] interface {
 	syncMapM_() *syncMapM[K, V]
 	key(K) K
+
+	Put(k K, v V)
+	PutAll(other SyncMapI[K, V])
+	GetEntry(k K) *Entry[K, V]
+	Get(k K) (v V)
+	GetIfAbsent(k K, f func(k K) V) (v V)
+	Remove(k K) bool
+	RemoveAll(ks ...K)
+	ContainsKeys(ks ...K) bool
+	ContainsAnyKeys(ks ...K) bool
+	Keys() []K
+	Values() []V
+	Len() int64
+	Empty() bool
+	Raw() map[K]V
+	Range(f func(k K, v V))
 }
 
 type syncMapM[K comparable, V any] struct {
-	i   syncMapI[K, V]
+	i   SyncMapI[K, V]
 	m   sync.Map
 	len int64
 }
@@ -29,7 +45,7 @@ func (this *syncMapM[K, V]) Put(k K, v V) {
 	atomic.AddInt64(&this.len, 1)
 }
 
-func (this *syncMapM[K, V]) PutAll(other syncMapI[K, V]) {
+func (this *syncMapM[K, V]) PutAll(other SyncMapI[K, V]) {
 	other.syncMapM_().Range(func(k K, v V) {
 		this.Put(k, v)
 	})
@@ -76,7 +92,7 @@ func (this *syncMapM[K, V]) ContainsKeys(ks ...K) bool {
 	return true
 }
 
-func (this *syncMapM[K, V]) ContainsAnyKey(ks ...K) bool {
+func (this *syncMapM[K, V]) ContainsAnyKeys(ks ...K) bool {
 	for _, k := range ks {
 		if _, ok := this.m.Load(this.i.key(k)); ok {
 			return true
@@ -131,6 +147,6 @@ func (this *syncMapM[K, V]) Range(f func(k K, v V)) {
 	})
 }
 
-func extendSyncMap[K comparable, V any](i syncMapI[K, V]) *syncMapM[K, V] {
+func extendSyncMap[K comparable, V any](i SyncMapI[K, V]) *syncMapM[K, V] {
 	return &syncMapM[K, V]{i: i}
 }

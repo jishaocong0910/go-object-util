@@ -1,12 +1,12 @@
 package o
 
-type setI[T comparable] interface {
+type SetI[T comparable] interface {
 	set_() *setM[T]
 }
 
 type setM[T comparable] struct {
-	i  setI[T]
-	im mapI[T, any]
+	i  SetI[T]
+	im MapI[T, any]
 }
 
 func (this *setM[T]) set_() *setM[T] {
@@ -19,7 +19,7 @@ func (this *setM[T]) Add(es ...T) {
 	}
 }
 
-func (this *setM[T]) AddSet(i setI[T]) {
+func (this *setM[T]) AddSet(i SetI[T]) {
 	for k := range i.set_().im.map_().m {
 		this.im.map_().Put(k, struct{}{})
 	}
@@ -59,6 +59,6 @@ func (this *setM[T]) Range(f func(t T)) {
 	})
 }
 
-func extendSet[T comparable](i setI[T], im mapI[T, any]) *setM[T] {
+func extendSet[T comparable](i SetI[T], im MapI[T, any]) *setM[T] {
 	return &setM[T]{i: i, im: im}
 }
