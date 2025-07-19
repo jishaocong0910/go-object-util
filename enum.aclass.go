@@ -7,21 +7,21 @@ import (
 	"unsafe"
 )
 
-type enumI[E enumElemI] interface {
-	enum_() *EnumM[E]
+type enum_[E enumElem_] interface {
+	enum_() *Enum__[E]
 }
 
-type EnumM[E enumElemI] struct {
+type Enum__[E enumElem_] struct {
 	elems []E
 	idMap map[string]E
 }
 
-func (this *EnumM[E]) enum_() *EnumM[E] {
+func (this *Enum__[E]) enum_() *Enum__[E] {
 	return this
 }
 
 // Elems 返回所有枚举值
-func (this *EnumM[E]) Elems() []E {
+func (this *Enum__[E]) Elems() []E {
 	var result []E
 	if this != nil {
 		result = this.elems
@@ -30,13 +30,13 @@ func (this *EnumM[E]) Elems() []E {
 }
 
 // Undefined 返回一个未定义的枚举值
-func (this *EnumM[E]) Undefined() E {
+func (this *Enum__[E]) Undefined() E {
 	var v E
 	return v
 }
 
 // OfId 查找ID对应枚举值
-func (this *EnumM[E]) OfId(id string) (e E) {
+func (this *Enum__[E]) OfId(id string) (e E) {
 	if this != nil {
 		if v, ok := this.idMap[id]; ok {
 			e = v
@@ -46,7 +46,7 @@ func (this *EnumM[E]) OfId(id string) (e E) {
 }
 
 // OfIdIgnoreCase 查找ID对应枚举值，不区分大小写
-func (this *EnumM[E]) OfIdIgnoreCase(id string) (e E) {
+func (this *Enum__[E]) OfIdIgnoreCase(id string) (e E) {
 	if this != nil {
 		for _, v := range this.elems {
 			if strings.EqualFold(v.enumElem_().id, id) {
@@ -58,7 +58,7 @@ func (this *EnumM[E]) OfIdIgnoreCase(id string) (e E) {
 }
 
 // Is 判断是否存在指定枚举值
-func (this *EnumM[E]) Is(source E, targets ...E) bool {
+func (this *Enum__[E]) Is(source E, targets ...E) bool {
 	if this != nil {
 		for _, t := range targets {
 			if t.enumElem_().ID() == source.enumElem_().ID() {
@@ -70,20 +70,20 @@ func (this *EnumM[E]) Is(source E, targets ...E) bool {
 }
 
 // Not 与Is方法相反
-func (this *EnumM[E]) Not(source E, targets ...E) bool {
+func (this *Enum__[E]) Not(source E, targets ...E) bool {
 	return !this.Is(source, targets...)
 }
 
-func NewEnum[E enumElemI, ES enumI[E]](e ES) ES {
+func NewEnum[E enumElem_, ES enum_[E]](e ES) ES {
 	t := reflect.TypeOf(e)
 	v := reflect.ValueOf(e)
-	if t.Kind() == reflect.Pointer {
-		panic("parameter's type must not be a pointer")
+	if t.Kind() != reflect.Struct {
+		panic("e must be a struct value")
 	}
 	t = reflect.TypeOf(&e).Elem()
 	v = reflect.ValueOf(&e).Elem()
 	expectedType := reflect.TypeOf((*E)(nil)).Elem()
-	v.FieldByName("EnumM").Set(reflect.ValueOf(&EnumM[E]{}))
+	v.FieldByName("Enum__").Set(reflect.ValueOf(&Enum__[E]{}))
 
 	for i := 0; i < v.NumField(); i++ {
 		tf := t.Field(i)
@@ -95,17 +95,17 @@ func NewEnum[E enumElemI, ES enumI[E]](e ES) ES {
 		if !actualType.AssignableTo(expectedType) {
 			continue
 		}
-		if vf.Kind() == reflect.Pointer {
-			panic(fmt.Sprintf("%s.%s must not be a pointer type", t.String(), tf.Name))
+		if vf.Kind() != reflect.Struct {
+			panic(fmt.Sprintf("%s.%s must be a struct value", t.String(), tf.Name))
 		}
 
 		var elem E
-		evField := vf.FieldByName("EnumElemM")
+		evField := vf.FieldByName("EnumElem__")
 		if !tf.IsExported() {
-			reflect.NewAt(evField.Type(), unsafe.Pointer(evField.UnsafeAddr())).Elem().Set(reflect.ValueOf(&EnumElemM{}))
+			reflect.NewAt(evField.Type(), unsafe.Pointer(evField.UnsafeAddr())).Elem().Set(reflect.ValueOf(&EnumElem__{}))
 			elem = reflect.NewAt(vf.Type(), unsafe.Pointer(vf.UnsafeAddr())).Elem().Interface().(E)
 		} else {
-			evField.Set(reflect.ValueOf(&EnumElemM{}))
+			evField.Set(reflect.ValueOf(&EnumElem__{}))
 			elem = vf.Interface().(E)
 		}
 

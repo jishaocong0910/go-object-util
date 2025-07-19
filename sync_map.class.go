@@ -6,7 +6,7 @@ import (
 )
 
 type SyncMap[K comparable, V any] struct {
-	*mapM[K, V]
+	*map__[K, V]
 	m   sync.Map
 	len int64
 }
@@ -24,7 +24,7 @@ func (this *SyncMap[K, V]) Put(k K, v V) {
 	atomic.AddInt64(&this.len, 1)
 }
 
-func (this *SyncMap[K, V]) PutAll(other MapI[K, V]) {
+func (this *SyncMap[K, V]) PutAll(other Map_[K, V]) {
 	other.Range(func(k K, v V) {
 		this.Put(k, v)
 	})
@@ -113,6 +113,10 @@ func (this *SyncMap[K, V]) Empty() bool {
 	return this.len == 0
 }
 
+func (this *SyncMap[K, V]) NotEmpty() bool {
+	return !this.Empty()
+}
+
 func (this *SyncMap[K, V]) Raw() map[K]V {
 	raw := make(map[K]V, this.len)
 	this.m.Range(func(k, v any) bool {
@@ -133,6 +137,6 @@ func (this *SyncMap[K, V]) Range(f func(k K, v V)) {
 
 func NewSyncMap[K comparable, V any]() *SyncMap[K, V] {
 	m := &SyncMap[K, V]{}
-	m.mapM = extendMap[K, V](m)
+	m.map__ = extendMap[K, V](m)
 	return m
 }

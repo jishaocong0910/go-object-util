@@ -1,75 +1,80 @@
 package o
 
-type SetI[T comparable] interface {
-	set_() *setM[T]
+type Set_[T comparable] interface {
+	set_() *set__[T]
 
 	Add(es ...T)
-	AddSet(other SetI[T])
+	AddSet(other Set_[T])
 	Remove(e T) bool
 	RemoveAll(e ...T)
 	Contains(es ...T) bool
 	ContainsAny(es ...T) bool
 	Len() int64
 	Empty() bool
+	NotEmpty() bool
 	Raw() []T
 	Range(f func(e T))
 }
 
-type setM[T comparable] struct {
-	i  SetI[T]
-	im MapI[T, any]
+type set__[T comparable] struct {
+	i  Set_[T]
+	im Map_[T, any]
 }
 
-func (this *setM[T]) set_() *setM[T] {
+func (this *set__[T]) set_() *set__[T] {
 	return this
 }
 
-func (this *setM[T]) Add(es ...T) {
+func (this *set__[T]) Add(es ...T) {
 	for _, e := range es {
 		this.im.Put(e, struct{}{})
 	}
 }
 
-func (this *setM[T]) AddSet(other SetI[T]) {
+func (this *set__[T]) AddSet(other Set_[T]) {
 	other.Range(func(e T) {
 		this.Add(e)
 	})
 }
 
-func (this *setM[T]) Remove(e T) bool {
+func (this *set__[T]) Remove(e T) bool {
 	return this.im.Remove(e)
 }
 
-func (this *setM[T]) RemoveAll(e ...T) {
+func (this *set__[T]) RemoveAll(e ...T) {
 	this.im.RemoveAll(e...)
 }
 
-func (this *setM[T]) Contains(ts ...T) bool {
+func (this *set__[T]) Contains(ts ...T) bool {
 	return this.im.ContainsKeys(ts...)
 }
 
-func (this *setM[T]) ContainsAny(es ...T) bool {
+func (this *set__[T]) ContainsAny(es ...T) bool {
 	return this.im.ContainsAnyKeys(es...)
 }
 
-func (this *setM[T]) Len() int64 {
+func (this *set__[T]) Len() int64 {
 	return this.im.Len()
 }
 
-func (this *setM[T]) Empty() bool {
+func (this *set__[T]) Empty() bool {
 	return this.im.Empty()
 }
 
-func (this *setM[T]) Raw() []T {
+func (this *set__[T]) NotEmpty() bool {
+	return this.im.NotEmpty()
+}
+
+func (this *set__[T]) Raw() []T {
 	return this.im.Keys()
 }
 
-func (this *setM[T]) Range(f func(e T)) {
+func (this *set__[T]) Range(f func(e T)) {
 	this.im.Range(func(k T, v any) {
 		f(k)
 	})
 }
 
-func extendSet[T comparable](i SetI[T], im MapI[T, any]) *setM[T] {
-	return &setM[T]{i: i, im: im}
+func extendSet[T comparable](i Set_[T], im Map_[T, any]) *set__[T] {
+	return &set__[T]{i: i, im: im}
 }

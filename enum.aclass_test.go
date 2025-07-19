@@ -7,12 +7,12 @@ import (
 )
 
 type Animal struct {
-	*EnumElemM
+	*EnumElem__
 }
 
 func TestEnum(t *testing.T) {
 	enum := NewEnum[Animal](struct {
-		*EnumM[Animal]
+		*Enum__[Animal]
 		cat, DOG, bird Animal
 	}{
 		cat:  Animal{},
@@ -47,7 +47,7 @@ func TestEnum(t *testing.T) {
 
 func TestEnumPanic(t *testing.T) {
 	type animals_ struct {
-		*EnumM[Animal]
+		*Enum__[Animal]
 		CAT  Animal
 		DOG  Animal
 		BIRD *Animal

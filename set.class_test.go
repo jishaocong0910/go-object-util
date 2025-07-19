@@ -32,7 +32,7 @@ func TestSet(t *testing.T) {
 	r.False(s.Contains("a"))
 }
 
-func validateElement[T comparable](r *require.Assertions, s SetI[T], contains ...T) {
+func validateElement[T comparable](r *require.Assertions, s Set_[T], contains ...T) {
 	r.Equal(int64(len(contains)), s.Len(), "expected: %v, actual: %v", contains, s.Raw())
 	for _, c := range contains {
 		r.True(s.Contains(c), "not contains: %v, actual: %v", c, s.Raw())

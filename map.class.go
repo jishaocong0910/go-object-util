@@ -1,13 +1,7 @@
 package o
 
-func NewMap[K comparable, V any]() *Map[K, V] {
-	m := &Map[K, V]{m: map[K]*Entry[K, V]{}}
-	m.mapM = extendMap[K, V](m)
-	return m
-}
-
 type Map[K comparable, V any] struct {
-	*mapM[K, V]
+	*map__[K, V]
 	m map[K]*Entry[K, V]
 }
 
@@ -19,7 +13,7 @@ func (this *Map[K, V]) Put(k K, v V) {
 	this.m[this.i.key(k)] = &Entry[K, V]{k, v}
 }
 
-func (this *Map[K, V]) PutAll(other MapI[K, V]) {
+func (this *Map[K, V]) PutAll(other Map_[K, V]) {
 	other.Range(func(k K, v V) {
 		this.Put(k, v)
 	})
@@ -104,6 +98,10 @@ func (this *Map[K, V]) Empty() bool {
 	return len(this.m) == 0
 }
 
+func (this *Map[K, V]) NotEmpty() bool {
+	return !this.Empty()
+}
+
 func (this *Map[K, V]) Raw() map[K]V {
 	raw := make(map[K]V, len(this.m))
 	for _, e := range this.m {
@@ -116,4 +114,10 @@ func (this *Map[K, V]) Range(f func(k K, v V)) {
 	for _, e := range this.m {
 		f(e.Key, e.Value)
 	}
+}
+
+func NewMap[K comparable, V any]() *Map[K, V] {
+	m := &Map[K, V]{m: map[K]*Entry[K, V]{}}
+	m.map__ = extendMap[K, V](m)
+	return m
 }

@@ -1,12 +1,12 @@
 package o
 
-func NewStrSet(caseSensitive bool, es ...string) *StrSet {
-	s := &StrSet{}
-	s.setM = extendSet[string](s, NewStrKeyMap[any](caseSensitive))
-	s.Add(es...)
-	return s
+type StrSet struct {
+	*set__[string]
 }
 
-type StrSet struct {
-	*setM[string]
+func NewStrSet(caseSensitive bool, es ...string) *StrSet {
+	s := &StrSet{}
+	s.set__ = extendSet[string](s, NewStrKeyMap[any](caseSensitive))
+	s.Add(es...)
+	return s
 }

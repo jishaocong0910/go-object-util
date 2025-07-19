@@ -1,19 +1,19 @@
 package o
 
-type enumElemI interface {
-	enumElem_() *EnumElemM
+type enumElem_ interface {
+	enumElem_() *EnumElem__
 }
 
-type EnumElemM struct {
+type EnumElem__ struct {
 	id string
 }
 
-func (this *EnumElemM) enumElem_() *EnumElemM {
+func (this *EnumElem__) enumElem_() *EnumElem__ {
 	return this
 }
 
 // ID 枚举值ID，值为枚举集合中的字段名
-func (this *EnumElemM) ID() string {
+func (this *EnumElem__) ID() string {
 	var id string
 	if this != nil {
 		id = this.id
@@ -22,6 +22,6 @@ func (this *EnumElemM) ID() string {
 }
 
 // Undefined 是否未定义的枚举
-func (this *EnumElemM) Undefined() bool {
+func (this *EnumElem__) Undefined() bool {
 	return this == nil
 }
