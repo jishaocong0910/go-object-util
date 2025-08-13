@@ -29,6 +29,15 @@ func (this *Enum__[E]) Elems() []E {
 	return result
 }
 
+// Elems 返回所有枚举ID
+func (this *Enum__[E]) Ids() []string {
+	var ids []string
+	for _, el := range this.Elems() {
+		ids = append(ids, el.enumElem_().id)
+	}
+	return ids
+}
+
 // Undefined 返回一个未定义的枚举值
 func (this *Enum__[E]) Undefined() E {
 	var v E
